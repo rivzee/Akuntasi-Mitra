@@ -1,0 +1,132 @@
+// 1. Konfigurasi Client & Database
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 2. Enum (Pilihan Status Baku)
+enum Role {
+  ADMIN
+  ACCOUNTANT
+  CLIENT
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT // Pesanan baru, belum dibayar
+  PAID            // Sudah dibayar, menunggu diambil akuntan
+  IN_PROGRESS     // Sedang dikerjakan akuntan
+  REVIEW          // Selesai dikerjakan, menunggu konfirmasi klien
+  COMPLETED       // Selesai final
+  CANCELLED       // Dibatalkan
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  FAILED
+}
+
+// 3. Model Data Utama
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Password terenkripsi (Hashed)
+  fullName  String
+  role      Role     @default(CLIENT)
+  phone     String?  // Opsional: untuk kontak WA
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relasi (Satu User bisa punya banyak...)
+  clientOrders     Order[]       @relation("ClientOrders")
+  accountantOrders Order[]       @relation("AccountantOrders")
+  logs             ActivityLog[] // Log aktifitas user
+  uploads          Document[]    // Dokumen yang diupload user ini
+}
+
+model ServicePackage {
+  id          String   @id @default(uuid())
+  name        String   // Contoh: "Laporan SPT Tahunan"
+  description String   @db.Text
+  price       Decimal  @db.Decimal(15, 2) // Menggunakan Decimal agar akurat untuk uang
+  isActive    Boolean  @default(true)     // Agar admin bisa sembunyikan layanan tanpa hapus data
+
+  orders      Order[]
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  status        OrderStatus @default(PENDING_PAYMENT)
+  totalAmount   Decimal     @db.Decimal(15, 2)
+  notes         String?     @db.Text // Catatan tambahan dari klien saat memesan
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relasi ke Klien (Pemesan)
+  clientId      String
+  client        User        @relation("ClientOrders", fields: [clientId], references: [id])
+
+  // Relasi ke Akuntan (Pengerja) - Boleh kosong (null) saat awal order
+  accountantId  String?
+  accountant    User?       @relation("AccountantOrders", fields: [accountantId], references: [id])
+
+  // Relasi ke Paket Layanan
+  serviceId     String
+  service       ServicePackage @relation(fields: [serviceId], references: [id])
+
+  // Relasi lain
+  documents     Document[]
+  payment       Payment?
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  fileName   String
+  fileUrl    String   // URL file (disimpan di folder public atau S3)
+  fileType   String   // e.g., "application/pdf", "image/jpeg"
+  
+  // Penanda Dokumen:
+  // false = Dokumen Mentah dari Klien (Bukti potong, Rekening koran)
+  // true  = Hasil Kerja Akuntan (Laporan Laba Rugi, SPT)
+  isResult   Boolean  @default(false) 
+  
+  uploadedAt DateTime @default(now())
+
+  // Relasi
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  uploaderId String
+  uploader   User     @relation(fields: [uploaderId], references: [id])
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  amount        Decimal       @db.Decimal(15, 2)
+  status        PaymentStatus @default(UNPAID)
+  paymentMethod String?       // e.g., "TRANSFER_BCA", "MIDTRANS", "MANUAL"
+  proofUrl      String?       // URL Bukti Transfer (jika manual)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  // Relasi One-to-One dengan Order
+  orderId       String        @unique
+  order         Order         @relation(fields: [orderId], references: [id])
+}
+
+// Tabel Log untuk fitur "Melihat Laporan Aktifitas" (Admin Requirement)
+model ActivityLog {
+  id          String   @id @default(uuid())
+  action      String   // e.g., "LOGIN", "CREATE_ORDER", "UPLOAD_RESULT"
+  description String?
+  ipAddress   String?  // Opsional: Alamat IP user
+  timestamp   DateTime @default(now())
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
