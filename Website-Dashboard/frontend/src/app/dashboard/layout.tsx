@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar'; // gunakan alias @ kalau sudah diset di tsconfig/jsconfig
-import LoadingSpinner from '@/components/LoadingSpinner'; // optional: buat sendiri atau pakai icon
+import LoadingSpinner from '../../components/LoadingSpinner'; // optional: buat sendiri atau pakai icon
 
 // Interface user yang proper
 interface User {
