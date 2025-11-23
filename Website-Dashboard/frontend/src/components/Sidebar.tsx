@@ -1,95 +1,143 @@
 'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { 
-  LayoutDashboard, Briefcase, ShoppingCart, FileText, 
-  Users, LogOut, Upload, PieChart, ChevronRight 
-} from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
-export default function Sidebar({ user }: { user: any }) {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'ADMIN' | 'AKUNTAN' | 'KLIEN';
+  avatar?: string;
+}
+
+interface SidebarProps {
+  user: User;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
+const menuItems = {
+  ADMIN: [
+    { label: 'Dashboard', href: '/dashboard', icon: 'Dashboard' },
+    { label: 'Kelola Layanan', href: '/dashboard/layanan', icon: 'Services' },
+    { label: 'Kelola Akun', href: '/dashboard/users', icon: 'Users' },
+    { label: 'Laporan Aktivitas', href: '/dashboard/logs', icon: 'Logs' },
+    { label: 'Pengaturan', href: '/dashboard/settings', icon: 'Settings' },
+  ],
+  AKUNTAN: [
+    { label: 'Dashboard', href: '/dashboard', icon: 'Dashboard' },
+    { label: 'Pemesanan Jasa', href: '/dashboard/pesanan', icon: 'Orders' },
+    { label: 'Unggah Hasil', href: '/dashboard/upload', icon: 'Upload' },
+  ],
+  KLIEN: [
+    { label: 'Dashboard', href: '/dashboard', icon: 'Dashboard' },
+    { label: 'Daftar Layanan', href: '/dashboard/layanan', icon: 'Services' },
+    { label: 'Ajukan Permintaan', href: '/dashboard/ajukan', icon: 'Request' },
+    { label: 'Dokumen Saya', href: '/dashboard/dokumen', icon: 'Documents' },
+    { label: 'Pembayaran', href: '/dashboard/pembayaran', icon: 'Payment' },
+  ],
+};
+
+const IconDashboard = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
+const IconServices = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h-4m-6 0H5" /></svg>;
+const IconUsers = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H9a4 4 0 01-4-4V9a4 4 0 014-4h6a4 4 0 014 4v8a4 4 0 01-4 4z" /></svg>;
+const IconLogs = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
+const IconOrders = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>;
+const IconUpload = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>;
+const IconRequest = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>;
+const IconDocuments = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2m-6 0h6" /></svg>;
+const IconPayment = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
+const IconSettings = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+
+export default function Sidebar({ user, isDarkMode, toggleDarkMode }: SidebarProps) {
+  const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
-  const menus = {
-    ADMIN: [
-      { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-      { name: 'Layanan Jasa', href: '/dashboard/services', icon: Briefcase },
-      { name: 'Semua Pesanan', href: '/dashboard/jobs', icon: FileText },
-      { name: 'Pengguna', href: '/dashboard/users', icon: Users },
-    ],
-    ACCOUNTANT: [
-      { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-      { name: 'Tugas Saya', href: '/dashboard/jobs', icon: FileText },
-      { name: 'Upload Laporan', href: '/dashboard/upload', icon: Upload },
-    ],
-    CLIENT: [
-      { name: 'Beranda', href: '/dashboard', icon: LayoutDashboard },
-      { name: 'Beli Layanan', href: '/dashboard/order', icon: ShoppingCart },
-      { name: 'Riwayat Pesanan', href: '/dashboard/jobs', icon: FileText },
-    ]
-  };
-
-  const roleMenus = menus[user?.role as keyof typeof menus] || [];
+  const items = menuItems[user.role];
 
   return (
-    <aside className="w-72 bg-slate-900 text-white h-screen fixed left-0 top-0 flex flex-col border-r border-slate-800 shadow-xl z-50 hidden md:flex">
-      {/* Logo Area */}
-      <div className="p-8">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <PieChart className="text-white" size={24} />
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+        collapsed ? '-translate-x-full md:translate-x-0 md:w-20' : ''
+      }`}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <h1 className={`font-bold text-xl text-gray-800 dark:text-white ${collapsed ? 'md:hidden' : ''}`}>
+          Akuntansi Mitra
+        </h1>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 md:block hidden"
+        >
+          Menu
+        </button>
+      </div>
+
+      {/* User Info */}
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+            {user.name.charAt(0)}
           </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Mitra<span className="text-indigo-400">Akuntan</span></h1>
-            <p className="text-xs text-slate-400">Financial Dashboard</p>
+          <div className={`${collapsed ? 'md:hidden' : ''}`}>
+            <p className="font-medium">{user.name}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{user.role}</p>
           </div>
         </div>
       </div>
 
-      {/* User Profile Mini */}
-      <div className="px-6 mb-6">
-        <div className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 backdrop-blur-sm">
-          <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Login Sebagai</p>
-          <p className="font-medium truncate">{user?.fullName}</p>
-          <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full mt-1 inline-block border border-indigo-500/30">
-            {user?.role}
-          </span>
-        </div>
-      </div>
-
-      {/* Menu Navigation */}
-      <nav className="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
-        {roleMenus.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link 
-              key={item.href} 
-              href={item.href} 
-              className={`flex items-center justify-between p-3.5 rounded-xl transition-all duration-300 group ${
-                isActive 
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20 translate-x-1' 
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-white hover:translate-x-1'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <item.icon size={20} className={isActive ? 'text-white' : 'text-slate-500 group-hover:text-white'} />
-                <span className="font-medium text-sm">{item.name}</span>
-              </div>
-              {isActive && <ChevronRight size={16} className="opacity-50" />}
-            </Link>
-          );
-        })}
+      {/* Menu */}
+      <nav className="p-4 space-y-2">
+        {items.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+              pathname === item.href
+                ? 'bg-blue-500 text-white'
+                : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+            } ${collapsed ? 'md:justify-center' : ''}`}
+          >
+            {item.icon === 'Dashboard' && <IconDashboard />}
+            {item.icon === 'Services' && <IconServices />}
+            {item.icon === 'Users' && <IconUsers />}
+            {item.icon === 'Logs' && <IconLogs />}
+            {item.icon === 'Orders' && <IconOrders />}
+            {item.icon === 'Upload' && <IconUpload />}
+            {item.icon === 'Request' && <IconRequest />}
+            {item.icon === 'Documents' && <IconDocuments />}
+            {item.icon === 'Payment' && <IconPayment />}
+            {item.icon === 'Settings' && <IconSettings />}
+            <span className={`${collapsed ? 'md:hidden' : ''}`}>{item.label}</span>
+          </Link>
+        ))}
       </nav>
 
-      {/* Logout Button */}
-      <div className="p-6 border-t border-slate-800">
-        <button 
-          onClick={() => { localStorage.removeItem('user'); router.push('/login'); }} 
-          className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-slate-800 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-xl transition-all text-sm font-medium border border-transparent hover:border-red-500/20"
-        >
-          <LogOut size={18} /> 
-          <span>Keluar Sesi</span>
-        </button>
+      {/* Dark Mode Toggle & Logout */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={toggleDarkMode}
+            className={`p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${collapsed ? 'md:mx-auto' : ''}`}
+            title="Toggle Dark Mode"
+          >
+            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          </button>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem('user');
+              window.location.href = '/login';
+            }}
+            className="p-3 rounded-lg hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-400"
+            title="Logout"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </aside>
   );
