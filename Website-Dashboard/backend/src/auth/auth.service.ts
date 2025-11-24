@@ -3,11 +3,11 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
-  async login(body: any) {
+  async login(body: { email: string; password: string }) {
     console.log('--- MULAI CEK LOGIN ---');
-    console.log('1. Data dari Frontend:', body); 
+    console.log('1. Data dari Frontend:', body);
 
     // Cari user
     const user = await this.prisma.user.findFirst({
@@ -22,7 +22,9 @@ export class AuthService {
     }
 
     if (user.password !== body.password) {
-      console.log(`❌ PASSWORD SALAH! (Di DB: "${user.password}", Input: "${body.password}")`);
+      console.log(
+        `❌ PASSWORD SALAH! (Di DB: "${user.password}", Input: "${body.password}")`,
+      );
       throw new UnauthorizedException('Password salah');
     }
 

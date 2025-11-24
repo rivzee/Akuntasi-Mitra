@@ -1,17 +1,14 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from './prisma/prisma.module'; // <--- Pastikan mengarah ke src/prisma
+import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ServicesModule } from './services/services.module';
 import { OrdersModule } from './orders/orders.module';
+import { DocumentsModule } from './documents/documents.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
-  imports: [
-    PrismaModule, 
-    AuthModule,
-    ServicesModule,
-    OrdersModule
-  ],
+  imports: [PrismaModule, AuthModule, ServicesModule, OrdersModule, DocumentsModule, PaymentsModule],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

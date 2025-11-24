@@ -4,31 +4,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// 2. Enum (Pilihan Status Baku)
-enum Role {
-  ADMIN
-  ACCOUNTANT
-  CLIENT
-}
-
-enum OrderStatus {
-  PENDING_PAYMENT // Pesanan baru, belum dibayar
-  PAID            // Sudah dibayar, menunggu diambil akuntan
-  IN_PROGRESS     // Sedang dikerjakan akuntan
-  REVIEW          // Selesai dikerjakan, menunggu konfirmasi klien
-  COMPLETED       // Selesai final
-  CANCELLED       // Dibatalkan
-}
-
-enum PaymentStatus {
-  UNPAID
-  PAID
-  FAILED
-}
+// 2. Enum (Dihapus karena SQLite tidak support Enum, ganti jadi String)
+// Role: ADMIN, ACCOUNTANT, CLIENT
+// OrderStatus: PENDING_PAYMENT, PAID, IN_PROGRESS, REVIEW, COMPLETED, CANCELLED
+// PaymentStatus: UNPAID, PAID, FAILED
 
 // 3. Model Data Utama
 
@@ -37,7 +20,7 @@ model User {
   email     String   @unique
   password  String   // Password terenkripsi (Hashed)
   fullName  String
-  role      Role     @default(CLIENT)
+  role      String   @default("KLIEN") // Ganti Role jadi String
   phone     String?  // Opsional: untuk kontak WA
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -52,8 +35,8 @@ model User {
 model ServicePackage {
   id          String   @id @default(uuid())
   name        String   // Contoh: "Laporan SPT Tahunan"
-  description String   @db.Text
-  price       Decimal  @db.Decimal(15, 2) // Menggunakan Decimal agar akurat untuk uang
+  description String
+  price       Decimal
   isActive    Boolean  @default(true)     // Agar admin bisa sembunyikan layanan tanpa hapus data
 
   orders      Order[]
@@ -61,9 +44,9 @@ model ServicePackage {
 
 model Order {
   id            String      @id @default(uuid())
-  status        OrderStatus @default(PENDING_PAYMENT)
-  totalAmount   Decimal     @db.Decimal(15, 2)
-  notes         String?     @db.Text // Catatan tambahan dari klien saat memesan
+  status        String      @default("PENDING_PAYMENT") // Ganti OrderStatus jadi String
+  totalAmount   Decimal
+  notes         String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   
@@ -107,8 +90,8 @@ model Document {
 
 model Payment {
   id            String        @id @default(uuid())
-  amount        Decimal       @db.Decimal(15, 2)
-  status        PaymentStatus @default(UNPAID)
+  amount        Decimal
+  status        String        @default("UNPAID") // Ganti PaymentStatus jadi String
   paymentMethod String?       // e.g., "TRANSFER_BCA", "MIDTRANS", "MANUAL"
   proofUrl      String?       // URL Bukti Transfer (jika manual)
   paidAt        DateTime?

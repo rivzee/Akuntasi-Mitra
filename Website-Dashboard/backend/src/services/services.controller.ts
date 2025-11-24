@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { ServicesService } from './services.service';
 
 @Controller('services')
 export class ServicesController {
-  constructor(private readonly servicesService: ServicesService) {}
+  constructor(private readonly servicesService: ServicesService) { }
 
   @Post()
   create(@Body() createServiceDto: any) {
@@ -13,5 +13,15 @@ export class ServicesController {
   @Get()
   findAll() {
     return this.servicesService.findAll();
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateServiceDto: any) {
+    return this.servicesService.update(id, updateServiceDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.servicesService.remove(id);
   }
 }

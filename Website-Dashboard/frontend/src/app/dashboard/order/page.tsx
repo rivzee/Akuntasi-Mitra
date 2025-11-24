@@ -12,14 +12,14 @@ export default function OrderPage() {
   useEffect(() => {
     const u = localStorage.getItem('user');
     if (u) setUser(JSON.parse(u));
-    axios.get('http://localhost:3000/services').then(res => setServices(res.data));
+    axios.get('http://localhost:3001/services').then(res => setServices(res.data));
   }, []);
 
   const handleOrder = async (serviceId: string) => {
     if (!confirm('Lanjutkan pemesanan layanan ini?')) return;
     try {
-      await axios.post('http://localhost:3000/orders', { clientId: user.id, serviceId, notes: 'Order Dashboard' });
-      router.push('/dashboard/jobs');
+      await axios.post('http://localhost:3001/orders', { clientId: user.id, serviceId, notes: 'Order Dashboard' });
+      router.push('/dashboard/my-orders');
     } catch (e) { alert('Gagal'); }
   };
 
@@ -33,7 +33,7 @@ export default function OrderPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {services.map((s, index) => (
           <div key={s.id} className={`relative bg-white rounded-3xl p-8 border transition-all duration-300 hover:-translate-y-2 ${index === 1 ? 'border-indigo-500 shadow-2xl ring-4 ring-indigo-500/10 scale-105 z-10' : 'border-gray-100 shadow-lg hover:shadow-xl'}`}>
-            
+
             {index === 1 && (
               <span className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-indigo-500 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-md">
                 Paling Laris
@@ -57,7 +57,7 @@ export default function OrderPage() {
               ))}
             </div>
 
-            <button 
+            <button
               onClick={() => handleOrder(s.id)}
               className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all ${index === 1 ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200' : 'bg-gray-50 text-gray-900 hover:bg-gray-100 border border-gray-200'}`}
             >

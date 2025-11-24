@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // Klien Membuat Order
-  async create(createOrderDto: any) {
+  async create(createOrderDto: { clientId: string; serviceId: string; notes?: string }) {
     // Ambil harga layanan dulu
     const service = await this.prisma.servicePackage.findUnique({
-      where: { id: createOrderDto.serviceId }
+      where: { id: createOrderDto.serviceId },
     });
 
-    if (!service) throw new Error('Layanan tidak ditemukan');
+    if (!service) throw new NotFoundException('Layanan tidak ditemukan');
 
     return this.prisma.order.create({
       data: {
@@ -32,7 +32,7 @@ export class OrdersService {
         client: { select: { fullName: true, email: true } },
         service: true,
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -40,8 +40,28 @@ export class OrdersService {
   async findMyOrders(clientId: string) {
     return this.prisma.order.findMany({
       where: { clientId: clientId },
-      include: { service: true },
-      orderBy: { createdAt: 'desc' }
+      include: { service: true, payment: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async updateStatus(id: string, status: string) {
+    return this.prisma.order.update({
+      where: { id },
+      data: { status: status as any },
+    });
+  }
+
+  // Find One Order
+  async findOne(id: string) {
+    return this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        client: { select: { fullName: true, email: true } },
+        service: true,
+        payment: true,
+        documents: { include: { uploader: { select: { fullName: true } } } },
+      },
     });
   }
 }
