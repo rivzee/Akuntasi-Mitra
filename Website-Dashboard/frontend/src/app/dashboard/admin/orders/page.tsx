@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import DataTable from '@/components/DataTable';
+import { DataTable } from '@/components/DataTable';
 import { FileText, DollarSign, Users, TrendingUp, Download } from 'lucide-react';
 import axios from 'axios';
 

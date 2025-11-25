@@ -43,10 +43,25 @@ export default function PaymentsPage() {
         setFiltered(data);
     }, [payments, search, statusFilter]);
 
+    const handleVerify = async (id: string) => {
+        if (!confirm('Verifikasi pembayaran ini?')) return;
+        try {
+            await axios.put(`http://localhost:3001/payments/${id}`, {
+                status: 'PAID',
+                paidAt: new Date().toISOString()
+            });
+            fetchPayments();
+            alert('Pembayaran berhasil diverifikasi');
+        } catch (err) {
+            console.error('Error verifying payment:', err);
+            alert('Gagal memverifikasi pembayaran');
+        }
+    };
+
     const statusBadge = (status: string) => {
         const colors = {
-            COMPLETED: 'bg-emerald-100 text-emerald-700',
-            PENDING_PAYMENT: 'bg-orange-100 text-orange-700',
+            PAID: 'bg-emerald-100 text-emerald-700',
+            UNPAID: 'bg-yellow-100 text-yellow-700',
             FAILED: 'bg-red-100 text-red-700',
         };
         return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-700';
@@ -82,8 +97,8 @@ export default function PaymentsPage() {
                             className="px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white"
                         >
                             <option value="ALL">Semua Status</option>
-                            <option value="COMPLETED">Selesai</option>
-                            <option value="PENDING_PAYMENT">Menunggu Pembayaran</option>
+                            <option value="PAID">Sudah Bayar</option>
+                            <option value="UNPAID">Belum Bayar</option>
                             <option value="FAILED">Gagal</option>
                         </select>
                     </div>
@@ -103,7 +118,9 @@ export default function PaymentsPage() {
                                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Client</th>
                                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Metode</th>
                                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Jumlah</th>
+                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Bukti</th>
                                 <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Status</th>
+                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/10">
@@ -116,8 +133,25 @@ export default function PaymentsPage() {
                                     </td>
                                     <td className="px-4 py-2 text-sm text-white">{p.paymentMethod}</td>
                                     <td className="px-4 py-2 text-sm text-white">{p.amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
+                                    <td className="px-4 py-2 text-sm text-white">
+                                        {p.proofUrl ? (
+                                            <a href={p.proofUrl} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-100 underline">
+                                                Lihat
+                                            </a>
+                                        ) : '-'}
+                                    </td>
                                     <td className="px-4 py-2">
-                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${statusBadge(p.status)}`}> {p.status.replace('_', ' ')} </span>
+                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${statusBadge(p.status)}`}> {p.status} </span>
+                                    </td>
+                                    <td className="px-4 py-2">
+                                        {p.status === 'UNPAID' && (
+                                            <button
+                                                onClick={() => handleVerify(p.id)}
+                                                className="flex items-center gap-1 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full text-xs transition-colors"
+                                            >
+                                                <CheckCircle size={14} /> Verifikasi
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

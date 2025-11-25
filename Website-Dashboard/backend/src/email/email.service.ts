@@ -1,28 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 
 @Injectable()
 export class EmailService {
-    private transporter;
+  private mailerSend: MailerSend;
+  private sender: Sender;
 
-    constructor() {
-        // Konfigurasi SMTP Gmail
-        this.transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER, // Email pengirim (dari .env)
-                pass: process.env.EMAIL_PASS, // App Password Gmail (dari .env)
-            },
-        });
-    }
+  constructor() {
+    // Inisialisasi MailerSend
+    this.mailerSend = new MailerSend({
+      apiKey: process.env.MAILERSEND_API_KEY || '',
+    });
 
-    // Kirim email selamat datang setelah registrasi
-    async sendWelcomeEmail(to: string, fullName: string) {
-        const mailOptions = {
-            from: `"RISA BUR - Kantor Jasa Akuntan" <${process.env.EMAIL_USER}>`,
-            to: to,
-            subject: '🎉 Selamat Datang di RISA BUR!',
-            html: `
+    // Konfigurasi Pengirim
+    this.sender = new Sender(
+      process.env.MAILERSEND_SENDER_EMAIL || 'info@trial-3z0vklo0p00l7qrx.mlsender.net', // Default trial domain if not set
+      process.env.MAILERSEND_SENDER_NAME || 'RISA BUR'
+    );
+  }
+
+  // Kirim email selamat datang setelah registrasi
+  async sendWelcomeEmail(to: string, fullName: string) {
+    const recipients = [
+      new Recipient(to, fullName)
+    ];
+
+    const htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -126,38 +129,52 @@ export class EmailService {
           </div>
         </body>
         </html>
-      `,
-        };
+      `;
 
-        try {
-            const info = await this.transporter.sendMail(mailOptions);
-            console.log('✅ Email terkirim:', info.messageId);
-            return { success: true, messageId: info.messageId };
-        } catch (error) {
-            console.error('❌ Gagal mengirim email:', error);
-            return { success: false, error: error.message };
-        }
+    const emailParams = new EmailParams()
+      .setFrom(this.sender)
+      .setTo(recipients)
+      .setSubject('🎉 Selamat Datang di RISA BUR!')
+      .setHtml(htmlContent)
+      .setText(`Selamat Datang, ${fullName}! Terima kasih telah bergabung dengan RISA BUR.`);
+
+    try {
+      const response = await this.mailerSend.email.send(emailParams);
+      console.log('✅ Email terkirim:', response);
+      return { success: true, data: response };
+    } catch (error) {
+      console.error('❌ Gagal mengirim email:', error);
+      return { success: false, error: error };
     }
+  }
 
-    // Kirim email notifikasi order baru (opsional untuk nanti)
-    async sendOrderNotification(to: string, orderDetails: any) {
-        const mailOptions = {
-            from: `"RISA BUR" <${process.env.EMAIL_USER}>`,
-            to: to,
-            subject: '📦 Order Baru Diterima',
-            html: `
-        <h2>Order Baru</h2>
+  // Kirim email notifikasi order baru
+  async sendOrderNotification(to: string, orderDetails: any) {
+    const recipients = [
+      new Recipient(to)
+    ];
+
+    const htmlContent = `
+        <h2>Order Baru Diterima</h2>
         <p>Order ID: ${orderDetails.id}</p>
         <p>Status: ${orderDetails.status}</p>
         <p>Total: Rp ${orderDetails.totalAmount}</p>
-      `,
-        };
+        `;
 
-        try {
-            await this.transporter.sendMail(mailOptions);
-            console.log('✅ Email order terkirim');
-        } catch (error) {
-            console.error('❌ Gagal mengirim email order:', error);
-        }
+    const emailParams = new EmailParams()
+      .setFrom(this.sender)
+      .setTo(recipients)
+      .setSubject('📦 Order Baru Diterima')
+      .setHtml(htmlContent)
+      .setText(`Order Baru Diterima. Order ID: ${orderDetails.id}, Total: Rp ${orderDetails.totalAmount}`);
+
+    try {
+      const response = await this.mailerSend.email.send(emailParams);
+      console.log('✅ Email order terkirim:', response);
+      return { success: true, data: response };
+    } catch (error) {
+      console.error('❌ Gagal mengirim email order:', error);
+      return { success: false, error: error };
     }
+  }
 }

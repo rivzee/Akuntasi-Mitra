@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import DataTable from '@/components/DataTable';
+import { DataTable } from '@/components/DataTable';
 import {
     Activity,
     User,
@@ -387,8 +387,8 @@ export default function ActivityLogPage() {
                         key={tab.key}
                         onClick={() => setFilter(tab.key as any)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === tab.key
-                                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow'
+                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                             }`}
                     >
                         {tab.label}

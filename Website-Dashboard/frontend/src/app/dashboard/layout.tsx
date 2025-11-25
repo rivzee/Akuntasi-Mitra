@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import Sidebar from '../../components/Sidebar';
 import Topbar from '../../components/Topbar';
+import { NotificationProvider } from '../../components/NotificationSystem';
 
 interface User {
   id: string;
@@ -75,48 +76,50 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <NotificationProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-      {/* Ambient Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-[100px] opacity-50"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full blur-[100px] opacity-50"></div>
-      </div>
-
-      {/* Sidebar */}
-      <Sidebar
-        user={user}
-        isDarkMode={isDarkMode}
-        toggleDarkMode={toggleDarkMode}
-        isCollapsed={isCollapsed}
-        setIsCollapsed={setIsCollapsed}
-      />
-
-      {/* Main Content - Adjusts based on sidebar state */}
-      <main
-        className={`relative z-10 transition-all duration-300 ease-in-out ${isCollapsed ? 'md:ml-[80px]' : 'md:ml-[288px]'
-          }`}
-      >
-        {/* Topbar */}
-        <Topbar user={user} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-
-        <div className="p-4 md:p-8 min-h-screen">
-          <div className="max-w-7xl mx-auto">
-            {/* Page Transition Animation */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        {/* Ambient Background */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-[100px] opacity-50"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full blur-[100px] opacity-50"></div>
         </div>
-      </main>
 
-    </div>
+        {/* Sidebar */}
+        <Sidebar
+          user={user}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+        />
+
+        {/* Main Content - Adjusts based on sidebar state */}
+        <main
+          className={`relative z-10 transition-all duration-300 ease-in-out ${isCollapsed ? 'md:ml-[80px]' : 'md:ml-[288px]'
+            }`}
+        >
+          {/* Topbar */}
+          <Topbar user={user} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+
+          <div className="p-4 md:p-8 min-h-screen">
+            <div className="max-w-7xl mx-auto">
+              {/* Page Transition Animation */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </main>
+
+      </div>
+    </NotificationProvider>
   );
 }

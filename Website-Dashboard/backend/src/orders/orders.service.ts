@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService
+  ) { }
 
   // Klien Membuat Order
   async create(createOrderDto: { clientId: string; serviceId: string; notes?: string }) {
@@ -14,7 +18,7 @@ export class OrdersService {
 
     if (!service) throw new NotFoundException('Layanan tidak ditemukan');
 
-    return this.prisma.order.create({
+    const order = await this.prisma.order.create({
       data: {
         clientId: createOrderDto.clientId,
         serviceId: createOrderDto.serviceId,
@@ -22,7 +26,19 @@ export class OrdersService {
         status: 'PENDING_PAYMENT',
         notes: createOrderDto.notes,
       },
+      include: { client: true } // Include client to get email
     });
+
+    // Kirim notifikasi email ke klien
+    try {
+      if (order.client?.email) {
+        await this.emailService.sendOrderNotification(order.client.email, order);
+      }
+    } catch (error) {
+      console.error('Gagal mengirim email notifikasi order:', error);
+    }
+
+    return order;
   }
 
   // Admin/Akuntan Melihat Semua Order

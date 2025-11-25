@@ -21,9 +21,11 @@ import {
     Star,
     ArrowRight
 } from 'lucide-react';
-import axios from 'axios';
 import { EnhancedLineChart, EnhancedBarChart, EnhancedPieChart } from '@/components/EnhancedCharts';
 import Link from 'next/link';
+import { useToast } from '@/hooks/useToast';
+import apiService from '@/services/api.service';
+import { DashboardSkeleton } from '@/components/Skeletons';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({
@@ -37,25 +39,28 @@ export default function AdminDashboard() {
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [recentUsers, setRecentUsers] = useState<any[]>([]);
     const [topServices, setTopServices] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const toast = useToast();
 
     useEffect(() => {
         fetchStats();
     }, []);
 
     const fetchStats = async () => {
+        setIsLoading(true);
         try {
             const [users, services, orders] = await Promise.all([
-                axios.get('http://localhost:3001/users'),
-                axios.get('http://localhost:3001/services'),
-                axios.get('http://localhost:3001/orders'),
+                apiService.users.getAll(),
+                apiService.services.getAll(),
+                apiService.orders.getAll(),
             ]);
 
-            setRecentOrders(orders.data.slice(0, 5));
-            setRecentUsers(users.data.slice(-5).reverse());
+            setRecentOrders(orders.slice(0, 5));
+            setRecentUsers(users.slice(-5).reverse());
 
             // Calculate top services
             const serviceCounts: any = {};
-            orders.data.forEach((order: any) => {
+            orders.forEach((order: any) => {
                 const serviceName = order.service?.name || 'Unknown';
                 serviceCounts[serviceName] = (serviceCounts[serviceName] || 0) + 1;
             });
@@ -65,21 +70,26 @@ export default function AdminDashboard() {
                 .slice(0, 5);
             setTopServices(topServicesArray);
 
-            // Calculate revenue (mock data)
-            const totalRevenue = orders.data
+            // Calculate revenue
+            const totalRevenue = orders
                 .filter((o: any) => o.status === 'COMPLETED')
                 .reduce((sum: number, o: any) => sum + (o.service?.price || 0), 0);
 
             setStats({
-                totalUsers: users.data.length,
-                totalServices: services.data.length,
-                totalOrders: orders.data.length,
-                completedOrders: orders.data.filter((o: any) => o.status === 'COMPLETED').length,
-                pendingOrders: orders.data.filter((o: any) => o.status === 'PENDING_PAYMENT').length,
+                totalUsers: users.length,
+                totalServices: services.length,
+                totalOrders: orders.length,
+                completedOrders: orders.filter((o: any) => o.status === 'COMPLETED').length,
+                pendingOrders: orders.filter((o: any) => o.status === 'PENDING_PAYMENT').length,
                 revenue: totalRevenue,
             });
-        } catch (error) {
+
+            toast.success('Dashboard loaded successfully');
+        } catch (error: any) {
             console.error('Error fetching stats:', error);
+            toast.error('Failed to load dashboard', error.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -94,6 +104,7 @@ export default function AdminDashboard() {
         { label: 'Add User', icon: UserPlus, href: '/dashboard/users', color: 'blue' },
         { label: 'Add Service', icon: Plus, href: '/dashboard/services', color: 'purple' },
         { label: 'View Orders', icon: FileText, href: '/dashboard/admin/orders', color: 'green' },
+        { label: 'Verify Payments', icon: DollarSign, href: '/dashboard/payments', color: 'orange' },
         { label: 'Settings', icon: Settings, href: '/dashboard/settings', color: 'gray' },
     ];
 
@@ -111,6 +122,11 @@ export default function AdminDashboard() {
         { name: 'Pending', value: stats.pendingOrders },
         { name: 'In Progress', value: stats.totalOrders - stats.completedOrders - stats.pendingOrders },
     ];
+
+    // Show loading skeleton
+    if (isLoading) {
+        return <DashboardSkeleton />;
+    }
 
     return (
         <div className="space-y-8">

@@ -22,6 +22,7 @@ model User {
   fullName  String
   role      String   @default("KLIEN") // Ganti Role jadi String
   phone     String?  // Opsional: untuk kontak WA
+  address   String?  // Opsional: alamat user
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -37,7 +38,11 @@ model ServicePackage {
   name        String   // Contoh: "Laporan SPT Tahunan"
   description String
   price       Decimal
+  duration    String?  // Durasi layanan (e.g., "1 Month", "3 Months")
+  category    String?  // Kategori layanan (e.g., "Pembukuan", "Pajak")
   isActive    Boolean  @default(true)     // Agar admin bisa sembunyikan layanan tanpa hapus data
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   orders      Order[]
 }

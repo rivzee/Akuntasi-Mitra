@@ -14,7 +14,7 @@ import {
     Sun
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import NotificationSystem from './NotificationSystem';
+import { NotificationCenter } from './NotificationSystem';
 
 
 interface TopbarProps {
@@ -65,7 +65,7 @@ export default function Topbar({ user, isDarkMode, toggleDarkMode }: TopbarProps
                         </button>
 
                         {/* Notifications */}
-                        <NotificationSystem />
+                        <NotificationCenter />
 
                         {/* User Profile Dropdown */}
                         <div className="relative">

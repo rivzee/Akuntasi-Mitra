@@ -10,7 +10,14 @@ export class UsersService {
   ) { }
 
   // Fungsi Register (Create User)
-  async create(data: { fullName: string; email: string; password: string; phone?: string; role?: 'KLIEN' | 'ADMIN' | 'AKUNTAN' }) {
+  async create(data: {
+    fullName: string;
+    email: string;
+    password: string;
+    phone?: string;
+    address?: string;
+    role?: 'KLIEN' | 'ADMIN' | 'AKUNTAN'
+  }) {
     // Check if email already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email }
@@ -26,6 +33,7 @@ export class UsersService {
         email: data.email,
         password: data.password, // Kita pakai password polos dulu biar gampang
         phone: data.phone, // Tambahkan phone
+        address: data.address, // Tambahkan address
         role: (data.role || 'KLIEN') as any,
       },
     });
@@ -58,6 +66,33 @@ export class UsersService {
   }
 
   async remove(id: string) {
+    // 1. Hapus Activity Log user ini
+    await this.prisma.activityLog.deleteMany({ where: { userId: id } });
+
+    // 2. Hapus Dokumen yang diupload user ini (yang tidak terikat order, atau biarkan cascade order menangani)
+    // Kita hapus yang uploaderId-nya user ini
+    await this.prisma.document.deleteMany({ where: { uploaderId: id } });
+
+    // 3. Hapus Order di mana user ini adalah Client
+    // Kita harus cari ordernya dulu untuk hapus payment & documents terkait order
+    const clientOrders = await this.prisma.order.findMany({ where: { clientId: id } });
+
+    for (const order of clientOrders) {
+      // Hapus Payment terkait order
+      await this.prisma.payment.deleteMany({ where: { orderId: order.id } });
+      // Hapus Document terkait order
+      await this.prisma.document.deleteMany({ where: { orderId: order.id } });
+      // Hapus Order
+      await this.prisma.order.delete({ where: { id: order.id } });
+    }
+
+    // 4. Jika user adalah Akuntan, set accountantId di order jadi null (jangan hapus ordernya)
+    await this.prisma.order.updateMany({
+      where: { accountantId: id },
+      data: { accountantId: null }
+    });
+
+    // 5. Akhirnya hapus User
     return this.prisma.user.delete({ where: { id } });
   }
 }

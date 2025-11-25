@@ -102,9 +102,9 @@ export default function RegisterPage() {
       {/* Animated background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Gradient orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
 
         {/* Floating particles */}
         {[...Array(15)].map((_, i) => (
@@ -130,7 +130,7 @@ export default function RegisterPage() {
 
       {/* Scroll Progress Bar */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 origin-left z-50"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 origin-left z-50"
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ duration: 0.5 }}
@@ -193,7 +193,7 @@ export default function RegisterPage() {
                     type="text"
                     value={form.fullName}
                     placeholder="John Doe"
-                    className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:bg-white/15 transition-all duration-300"
+                    className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 transition-all duration-300"
                     onChange={e => setForm({ ...form, fullName: e.target.value })}
                     required
                   />
@@ -227,7 +227,7 @@ export default function RegisterPage() {
                     type="email"
                     value={form.email}
                     placeholder="john@gmail.com"
-                    className={`w-full pl-12 pr-12 py-3 bg-white/10 border ${errors.email ? 'border-red-500' : 'border-white/20'} rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:bg-white/15 transition-all duration-300`}
+                    className={`w-full pl-12 pr-12 py-3 bg-white/10 border ${errors.email ? 'border-red-500' : 'border-white/20'} rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 transition-all duration-300`}
                     onChange={e => {
                       setForm({ ...form, email: e.target.value });
                       setErrors({ ...errors, email: '' });
@@ -274,7 +274,7 @@ export default function RegisterPage() {
                     type="tel"
                     value={form.phone}
                     placeholder="+62 812 3456 7890"
-                    className={`w-full pl-12 pr-12 py-3 bg-white/10 border ${errors.phone ? 'border-red-500' : 'border-white/20'} rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:bg-white/15 transition-all duration-300`}
+                    className={`w-full pl-12 pr-12 py-3 bg-white/10 border ${errors.phone ? 'border-red-500' : 'border-white/20'} rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 transition-all duration-300`}
                     onChange={e => {
                       setForm({ ...form, phone: e.target.value });
                       setErrors({ ...errors, phone: '' });
@@ -321,7 +321,7 @@ export default function RegisterPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={form.password}
                     placeholder="Minimal 6 karakter"
-                    className={`w-full pl-12 pr-12 py-3 bg-white/10 border ${errors.password ? 'border-red-500' : 'border-white/20'} rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:bg-white/15 transition-all duration-300`}
+                    className={`w-full pl-12 pr-12 py-3 bg-white/10 border ${errors.password ? 'border-red-500' : 'border-white/20'} rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 transition-all duration-300`}
                     onChange={e => {
                       setForm({ ...form, password: e.target.value });
                       setErrors({ ...errors, password: '' });
@@ -359,7 +359,7 @@ export default function RegisterPage() {
                 transition={{ delay: 0.9 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 rounded-xl font-bold text-lg hover:opacity-90 disabled:opacity-50 shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 transition-all mt-6"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:opacity-90 disabled:opacity-50 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 transition-all mt-6"
               >
                 {loading ? (
                   <>
@@ -377,6 +377,44 @@ export default function RegisterPage() {
                   </>
                 )}
               </motion.button>
+
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/10"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-[#0B1120] text-gray-400">Atau daftar dengan</span>
+                </div>
+              </div>
+
+              {/* Google Login Button */}
+              <motion.a
+                href="http://localhost:3001/auth/google"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-white text-gray-900 py-3 rounded-xl font-semibold flex items-center justify-center gap-3 hover:bg-gray-100 transition-all cursor-pointer"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path
+                    fill="currentColor"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  />
+                </svg>
+                Google
+              </motion.a>
             </form>
 
             {/* Login link */}
@@ -400,9 +438,9 @@ export default function RegisterPage() {
               className="text-center mt-4 text-xs text-gray-500"
             >
               Dengan mendaftar, Anda menyetujui{' '}
-              <a href="#" className="text-emerald-400 hover:underline">Syarat & Ketentuan</a>
+              <a href="#" className="text-blue-400 hover:underline">Syarat & Ketentuan</a>
               {' '}dan{' '}
-              <a href="#" className="text-emerald-400 hover:underline">Kebijakan Privasi</a>
+              <a href="#" className="text-blue-400 hover:underline">Kebijakan Privasi</a>
             </motion.p>
           </div>
 

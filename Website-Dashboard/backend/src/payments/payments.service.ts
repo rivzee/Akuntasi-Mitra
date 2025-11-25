@@ -23,10 +23,19 @@ export class PaymentsService {
     }
 
     async update(id: string, data: { status?: string; paidAt?: Date }) {
-        return this.prisma.payment.update({
+        const payment = await this.prisma.payment.update({
             where: { id },
             data: data as any,
         });
+
+        if (data.status === 'PAID') {
+            await this.prisma.order.update({
+                where: { id: payment.orderId },
+                data: { status: 'PAID' },
+            });
+        }
+
+        return payment;
     }
 
     async findByOrder(orderId: string) {

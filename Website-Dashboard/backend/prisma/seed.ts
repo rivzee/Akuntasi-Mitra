@@ -3,109 +3,118 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Sedang mengisi data...');
+  console.log('🌱 Starting seeding (PLAIN TEXT PASSWORD)...');
 
-  // 1. ADMIN
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@akuntan.com' },
-    update: {
-      password: 'admin',
-      role: 'ADMIN' as any,
-    },
-    create: {
+  // 1. Clean Database
+  try {
+    await prisma.activityLog.deleteMany();
+    await prisma.payment.deleteMany();
+    await prisma.document.deleteMany();
+    await prisma.order.deleteMany();
+    await prisma.servicePackage.deleteMany();
+    await prisma.user.deleteMany();
+    console.log('🧹 Database cleaned');
+  } catch (error) {
+    console.log('⚠️ Warning cleaning db:', error);
+  }
+
+  // 2. Create Users (PASSWORD PLAIN TEXT "123456")
+  // Karena auth.service.ts membandingkan string langsung (user.password !== body.password)
+  const password = '123456';
+
+  // Admin
+  const admin = await prisma.user.create({
+    data: {
+      fullName: 'Admin Utama',
       email: 'admin@akuntan.com',
-      fullName: 'Boss Admin',
-      password: 'admin',
-      role: 'ADMIN' as any,
-    },
-  });
-  console.log('✅ Admin Ready: admin@akuntan.com / admin');
-
-  // 2. AKUNTAN
-  const accountant = await prisma.user.upsert({
-    where: { email: 'akuntan@akuntan.com' },
-    update: {
-      password: 'akuntan',
-      role: 'AKUNTAN' as any,
-    },
-    create: {
-      email: 'akuntan@akuntan.com',
-      fullName: 'Staff Akuntan',
-      password: 'akuntan',
-      role: 'AKUNTAN' as any,
-    },
-  });
-  console.log('✅ Akuntan Ready: akuntan@akuntan.com / akuntan');
-
-  // 3. KLIEN
-  const client = await prisma.user.upsert({
-    where: { email: 'klien@akuntan.com' },
-    update: {
-      password: 'klien',
-      role: 'KLIEN' as any,
-    },
-    create: {
-      email: 'klien@akuntan.com',
-      fullName: 'John Doe',
-      password: 'klien',
-      role: 'KLIEN' as any,
+      password: password, // Plain text
+      role: 'ADMIN',
       phone: '081234567890',
+      address: 'Kantor Pusat Jakarta',
     },
   });
-  console.log('✅ Klien Ready: klien@akuntan.com / klien');
 
-  // 4. LAYANAN
+  // Akuntan
+  const accountant = await prisma.user.create({
+    data: {
+      fullName: 'Budi Akuntan',
+      email: 'akuntan@akuntan.com',
+      password: password, // Plain text
+      role: 'AKUNTAN',
+      phone: '081234567891',
+      address: 'Cabang Bandung',
+    },
+  });
+
+  // Klien
+  const client = await prisma.user.create({
+    data: {
+      fullName: 'PT Maju Jaya',
+      email: 'klien@akuntan.com',
+      password: password, // Plain text
+      role: 'KLIEN',
+      phone: '081234567892',
+      address: 'Kawasan Industri Cikarang',
+    },
+  });
+
+  console.log('👥 Users created with password "123456"');
+
+  // 3. Create Services
   const services = [
     {
-      name: 'Jasa Penyusunan Laporan Keuangan',
-      description: 'Penyusunan laporan keuangan komprehensif sesuai standar SAK yang berlaku untuk analisis performa bisnis.',
+      name: 'Pembukuan Bulanan UMKM',
+      description: 'Layanan pencatatan transaksi dan laporan keuangan bulanan untuk UMKM.',
+      price: 500000,
+      duration: '1 Bulan',
+      category: 'Pembukuan',
+      isActive: true,
+    },
+    {
+      name: 'Laporan SPT Tahunan Badan',
+      description: 'Penyusunan dan pelaporan SPT Tahunan PPh Badan.',
       price: 2500000,
+      duration: '1 Tahun',
+      category: 'Pajak',
+      isActive: true,
     },
     {
-      name: 'Jasa Pembukuan',
-      description: 'Pencatatan transaksi harian yang rapi dan sistematis menggunakan software akuntansi modern.',
-      price: 1500000,
-    },
-    {
-      name: 'Jasa Pendampingan Penyusunan Laporan Keuangan',
-      description: 'Program pelatihan intensif untuk meningkatkan kompetensi tim keuangan internal perusahaan Anda.',
-      price: 3000000,
-    },
-    {
-      name: 'Jasa Perpajakan',
-      description: 'Solusi perpajakan lengkap mulai dari perhitungan, pelaporan, hingga perencanaan pajak strategis.',
-      price: 2000000,
-    },
-    {
-      name: 'Jasa Audit Internal',
-      description: 'Evaluasi independen terhadap sistem pengendalian internal untuk meminimalisir risiko kebocoran.',
+      name: 'Audit Laporan Keuangan',
+      description: 'Jasa audit independen untuk laporan keuangan perusahaan.',
       price: 5000000,
+      duration: '3 Bulan',
+      category: 'Audit',
+      isActive: true,
+    },
+    {
+      name: 'Konsultasi Pajak',
+      description: 'Sesi konsultasi permasalahan perpajakan.',
+      price: 1000000,
+      duration: '1 Jam',
+      category: 'Konsultasi',
+      isActive: true,
     },
   ];
 
   for (const service of services) {
-    const existing = await prisma.servicePackage.findFirst({
-      where: { name: service.name },
-    });
-
-    if (existing) {
-      await prisma.servicePackage.update({
-        where: { id: existing.id },
-        data: service,
-      });
-    } else {
-      await prisma.servicePackage.create({
-        data: service,
-      });
-    }
+    await prisma.servicePackage.create({ data: service });
   }
-  console.log('✅ Services Synced');
 
-  console.log('\n🎉 Seeding completed!');
-  console.log('\n📋 Demo Accounts:');
-  console.log('   Admin    : admin@akuntan.com / admin');
-  console.log('   Akuntan  : akuntan@akuntan.com / akuntan');
-  console.log('   Klien    : klien@akuntan.com / klien');
+  console.log('📦 Services created');
+
+  // 4. Create Dummy Order
+  await prisma.order.create({
+    data: {
+      status: 'PENDING_PAYMENT',
+      totalAmount: 500000,
+      notes: 'Mohon dibantu untuk pembukuan bulan Januari',
+      clientId: client.id,
+      serviceId: (await prisma.servicePackage.findFirst())?.id || '',
+    },
+  });
+
+  console.log('📝 Dummy order created');
+  console.log('✅ Seeding finished successfully.');
 }
 
 main()
