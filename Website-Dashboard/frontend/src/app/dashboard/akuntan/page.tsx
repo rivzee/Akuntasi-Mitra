@@ -130,12 +130,12 @@ export default function AkuntanDashboard() {
                                     <div>
                                         <p className="font-semibold text-gray-900 dark:text-white">{job.service?.name}</p>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Client: {job.client?.fullName}
+                                            Klien: {job.client?.fullName}
                                         </p>
                                     </div>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${job.status === 'PAID' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'}`}>
-                                    {job.status === 'PAID' ? 'New Job' : 'In Progress'}
+                                    {job.status === 'PAID' ? 'Pekerjaan Baru' : 'Sedang Diproses'}
                                 </span>
                             </div>
                         ))

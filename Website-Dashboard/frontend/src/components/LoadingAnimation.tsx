@@ -11,7 +11,7 @@ interface LoadingAnimationProps {
 export default function LoadingAnimation({
     variant = 'spinner',
     size = 'md',
-    text = 'Loading...'
+    text = 'Memuat...'
 }: LoadingAnimationProps) {
     const sizeClasses = {
         sm: 'w-8 h-8',

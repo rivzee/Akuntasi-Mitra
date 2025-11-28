@@ -42,7 +42,7 @@ export default function Topbar({ user, isDarkMode, toggleDarkMode }: TopbarProps
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                             <input
                                 type="text"
-                                placeholder="Search..."
+                                placeholder="Cari..."
                                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                             />
                         </div>
@@ -122,8 +122,8 @@ export default function Topbar({ user, isDarkMode, toggleDarkMode }: TopbarProps
                                                 >
                                                     <User size={18} className="text-gray-600 dark:text-gray-400" />
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">My Profile</p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">View and edit profile</p>
+                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Profil Saya</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">Lihat dan edit profil</p>
                                                     </div>
                                                 </button>
                                             </Link>
@@ -135,8 +135,8 @@ export default function Topbar({ user, isDarkMode, toggleDarkMode }: TopbarProps
                                                 >
                                                     <Settings size={18} className="text-gray-600 dark:text-gray-400" />
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Settings</p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">Preferences</p>
+                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Pengaturan</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">Preferensi</p>
                                                     </div>
                                                 </button>
                                             </Link>
@@ -149,8 +149,8 @@ export default function Topbar({ user, isDarkMode, toggleDarkMode }: TopbarProps
                                             >
                                                 <LogOut size={18} className="text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400" />
                                                 <div>
-                                                    <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400">Logout</p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Sign out of account</p>
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400">Keluar</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">Keluar dari akun</p>
                                                 </div>
                                             </button>
                                         </div>

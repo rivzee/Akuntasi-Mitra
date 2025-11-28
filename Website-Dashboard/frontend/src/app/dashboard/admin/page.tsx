@@ -84,28 +84,28 @@ export default function AdminDashboard() {
                 revenue: totalRevenue,
             });
 
-            toast.success('Dashboard loaded successfully');
+            toast.success('Dashboard berhasil dimuat');
         } catch (error: any) {
             console.error('Error fetching stats:', error);
-            toast.error('Failed to load dashboard', error.message);
+            toast.error('Gagal memuat dashboard', error.message);
         } finally {
             setIsLoading(false);
         }
     };
 
     const statCards = [
-        { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'purple', gradient: 'from-purple-500 to-pink-500', trend: '+12%' },
-        { label: 'Total Services', value: stats.totalServices, icon: Package, color: 'blue', gradient: 'from-blue-500 to-cyan-500', trend: '+5%' },
-        { label: 'Total Orders', value: stats.totalOrders, icon: FileText, color: 'green', gradient: 'from-emerald-500 to-teal-500', trend: '+23%' },
-        { label: 'Revenue', value: `Rp ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: 'orange', gradient: 'from-orange-500 to-red-500', trend: '+18%' },
+        { label: 'Total Pengguna', value: stats.totalUsers, icon: Users, color: 'purple', gradient: 'from-purple-500 to-pink-500', trend: '+12%' },
+        { label: 'Total Layanan', value: stats.totalServices, icon: Package, color: 'blue', gradient: 'from-blue-500 to-cyan-500', trend: '+5%' },
+        { label: 'Total Pesanan', value: stats.totalOrders, icon: FileText, color: 'green', gradient: 'from-emerald-500 to-teal-500', trend: '+23%' },
+        { label: 'Pendapatan', value: `Rp ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: 'orange', gradient: 'from-orange-500 to-red-500', trend: '+18%' },
     ];
 
     const quickActions = [
-        { label: 'Add User', icon: UserPlus, href: '/dashboard/users', color: 'blue' },
-        { label: 'Add Service', icon: Plus, href: '/dashboard/services', color: 'purple' },
-        { label: 'View Orders', icon: FileText, href: '/dashboard/admin/orders', color: 'green' },
-        { label: 'Verify Payments', icon: DollarSign, href: '/dashboard/payments', color: 'orange' },
-        { label: 'Settings', icon: Settings, href: '/dashboard/settings', color: 'gray' },
+        { label: 'Tambah Pengguna', icon: UserPlus, href: '/dashboard/users', color: 'blue' },
+        { label: 'Tambah Layanan', icon: Plus, href: '/dashboard/services', color: 'purple' },
+        { label: 'Lihat Pesanan', icon: FileText, href: '/dashboard/admin/orders', color: 'green' },
+        { label: 'Verifikasi Pembayaran', icon: DollarSign, href: '/dashboard/payments', color: 'orange' },
+        { label: 'Pengaturan', icon: Settings, href: '/dashboard/settings', color: 'gray' },
     ];
 
     const chartData = [
@@ -118,9 +118,9 @@ export default function AdminDashboard() {
     ];
 
     const orderStatusData = [
-        { name: 'Completed', value: stats.completedOrders },
-        { name: 'Pending', value: stats.pendingOrders },
-        { name: 'In Progress', value: stats.totalOrders - stats.completedOrders - stats.pendingOrders },
+        { name: 'Selesai', value: stats.completedOrders },
+        { name: 'Menunggu', value: stats.pendingOrders },
+        { name: 'Diproses', value: stats.totalOrders - stats.completedOrders - stats.pendingOrders },
     ];
 
     // Show loading skeleton
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                     transition={{ delay: 0.4 }}
                     className="lg:col-span-2 backdrop-blur-xl bg-white/60 dark:bg-gray-800/40 rounded-3xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-lg"
                 >
-                    <EnhancedLineChart data={chartData} title="Revenue Trends" />
+                    <EnhancedLineChart data={chartData} title="Tren Pendapatan" />
                 </motion.div>
 
                 <motion.div
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
                     transition={{ delay: 0.5 }}
                     className="backdrop-blur-xl bg-white/60 dark:bg-gray-800/40 rounded-3xl p-6 border border-gray-200/50 dark:border-gray-700/50 shadow-lg"
                 >
-                    <EnhancedPieChart data={orderStatusData} title="Order Status" />
+                    <EnhancedPieChart data={orderStatusData} title="Status Pesanan" />
                 </motion.div>
             </div>
 
@@ -228,10 +228,10 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <div className="w-1 h-6 bg-purple-500 rounded-full" />
-                            Recent Orders
+                            Pesanan Terbaru
                         </h3>
                         <Link href="/dashboard/admin/orders" className="text-sm text-purple-600 hover:underline flex items-center gap-1">
-                            View All <ArrowRight size={14} />
+                            Lihat Semua <ArrowRight size={14} />
                         </Link>
                     </div>
                     <div className="space-y-3">
@@ -263,7 +263,7 @@ export default function AdminDashboard() {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-center text-gray-500 py-8">No recent orders.</p>
+                            <p className="text-center text-gray-500 py-8">Tidak ada pesanan terbaru.</p>
                         )}
                     </div>
                 </motion.div>
@@ -278,10 +278,10 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                             <div className="w-1 h-6 bg-blue-500 rounded-full" />
-                            Recent Users
+                            Pengguna Terbaru
                         </h3>
                         <Link href="/dashboard/users" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
-                            View All <ArrowRight size={14} />
+                            Lihat Semua <ArrowRight size={14} />
                         </Link>
                     </div>
                     <div className="space-y-3">
@@ -308,7 +308,7 @@ export default function AdminDashboard() {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-center text-gray-500 py-8">No recent users.</p>
+                            <p className="text-center text-gray-500 py-8">Tidak ada pengguna terbaru.</p>
                         )}
                     </div>
                 </motion.div>
@@ -324,10 +324,10 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <div className="w-1 h-6 bg-emerald-500 rounded-full" />
-                        Top Services
+                        Layanan Terpopuler
                     </h3>
                     <Link href="/dashboard/services" className="text-sm text-emerald-600 hover:underline flex items-center gap-1">
-                        View All <ArrowRight size={14} />
+                        Lihat Semua <ArrowRight size={14} />
                     </Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -341,11 +341,11 @@ export default function AdminDashboard() {
                                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">
                                     {service.name}
                                 </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">orders</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">pesanan</p>
                             </div>
                         ))
                     ) : (
-                        <p className="col-span-full text-center text-gray-500 py-8">No services data.</p>
+                        <p className="col-span-full text-center text-gray-500 py-8">Tidak ada data layanan.</p>
                     )}
                 </div>
             </motion.div>

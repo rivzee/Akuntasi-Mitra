@@ -1,9 +1,27 @@
-# 🧾 Akuntasi Mitra - Sistem Manajemen Akuntansi
+# 🧾 Akuntasi Mitra - Fullstack Sistem Manajemen Akuntansi
 
-Platform manajemen akuntansi modern untuk menghubungkan klien dengan akuntan profesional.
+Platform manajemen akuntansi modern **fullstack** untuk menghubungkan klien dengan akuntan profesional.
 
 ![Status](https://img.shields.io/badge/status-production--ready-green)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Stack](https://img.shields.io/badge/stack-fullstack-blue)
+![Backend](https://img.shields.io/badge/backend-NestJS-red)
+![Frontend](https://img.shields.io/badge/frontend-Next.js-black)
+
+---
+
+## 📖 **[BACA PANDUAN LENGKAP FULLSTACK →](./FULLSTACK_GUIDE.md)**
+
+**Semua yang Anda butuhkan dalam satu file:**
+- ✅ Konfirmasi project fullstack
+- ✅ Setup lengkap step-by-step
+- ✅ Arsitektur & flow diagram
+- ✅ Testing & troubleshooting
+- ✅ Deployment guide
+- ✅ Enhancement plan
+- ✅ API documentation
+
+**[→ Klik di sini untuk membuka FULLSTACK_GUIDE.md](./FULLSTACK_GUIDE.md)**
 
 ---
 
@@ -152,6 +170,37 @@ Email: klien@akuntasi.com
 Password: klien123
 ```
 
+### 🚀 Quick Start Scripts (Windows)
+
+**Option 1: Automated Setup (Recommended)**
+```bash
+# Run setup script (one-time)
+SETUP_FULLSTACK.bat
+
+# Then start fullstack app
+START_FULLSTACK.bat
+```
+
+**Option 2: Manual Start**
+```bash
+# Terminal 1: Start Backend
+START_BACKEND.bat
+
+# Terminal 2: Start Frontend
+START_FRONTEND.bat
+```
+
+**Option 3: Command Line**
+```bash
+# Backend
+cd Website-Dashboard\backend
+npm run start:dev
+
+# Frontend (new terminal)
+cd Website-Dashboard\frontend
+npm run dev
+```
+
 ---
 
 ## 🌐 Deployment
@@ -195,11 +244,22 @@ vercel --prod
 
 ## 📚 Dokumentasi
 
+### Fullstack Guides
+- **[Fullstack Setup Checklist](./FULLSTACK_SETUP_CHECKLIST.md)** - Complete integration guide
+- **[Fullstack Architecture](./FULLSTACK_ARCHITECTURE.md)** - System architecture & flows
+- **[Quick Start](./QUICK_START.md)** - Fast setup commands
+- **[Enhancement Plan](./FULLSTACK_ENHANCEMENT_PLAN.md)** - Future improvements
+
 ### Setup Guides
 - [Google OAuth Setup](./GOOGLE_OAUTH_SETUP.md)
 - [Email Setup](./EMAIL_SETUP.md)
 - [Testing Register](./TESTING_REGISTER.md)
 - [Panduan Komponen Responsif](./PANDUAN_KOMPONEN_RESPONSIF.md)
+
+### Deployment Guides
+- **[Quick Deploy](./QUICK_DEPLOY.md)** - Fast deployment
+- **[Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Full deployment guide
+- **[Workflow](../.agent/workflows/deploy.md)** - Deployment workflow
 
 ### Implementation
 - [Frontend Implementation Guide](./Website-Dashboard/frontend/IMPLEMENTATION_GUIDE.md)

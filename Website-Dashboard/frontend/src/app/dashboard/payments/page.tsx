@@ -60,16 +60,23 @@ export default function PaymentsPage() {
 
     const statusBadge = (status: string) => {
         const colors = {
-            PAID: 'bg-emerald-100 text-emerald-700',
-            UNPAID: 'bg-yellow-100 text-yellow-700',
-            FAILED: 'bg-red-100 text-red-700',
+            PAID: 'bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-300 border border-emerald-500/30',
+            UNPAID: 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30',
+            FAILED: 'bg-gradient-to-r from-red-500/20 to-pink-500/20 text-red-300 border border-red-500/30',
         };
-        return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-700';
+        return colors[status as keyof typeof colors] || 'bg-gray-500/20 text-gray-300 border border-gray-500/30';
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-950 text-white p-6">
+            {/* Animated Background */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+            </div>
+
+            <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
                 <motion.div
                     className="flex flex-col md:flex-row md:items-center md:justify-between mb-8"
@@ -77,10 +84,15 @@ export default function PaymentsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <h1 className="text-3xl font-bold text-white mb-4 md:mb-0">
-                        Pembayaran
-                    </h1>
-                    <div className="flex gap-4 items-center">
+                    <div>
+                        <h1 className="text-4xl font-bold mb-2">
+                            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                Pembayaran
+                            </span>
+                        </h1>
+                        <p className="text-gray-400">Kelola dan verifikasi pembayaran klien</p>
+                    </div>
+                    <div className="flex gap-4 items-center mt-4 md:mt-0">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                             <input
@@ -88,90 +100,116 @@ export default function PaymentsPage() {
                                 placeholder="Cari client, email, metode..."
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
-                                className="pl-10 pr-4 py-2 rounded-lg bg-white/10 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white"
+                                className="pl-10 pr-4 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                             />
                         </div>
                         <select
                             value={statusFilter}
                             onChange={e => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white"
+                            className="px-4 py-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
                         >
-                            <option value="ALL">Semua Status</option>
-                            <option value="PAID">Sudah Bayar</option>
-                            <option value="UNPAID">Belum Bayar</option>
-                            <option value="FAILED">Gagal</option>
+                            <option value="ALL" className="bg-gray-900">Semua Status</option>
+                            <option value="PAID" className="bg-gray-900">Sudah Bayar</option>
+                            <option value="UNPAID" className="bg-gray-900">Belum Bayar</option>
+                            <option value="FAILED" className="bg-gray-900">Gagal</option>
                         </select>
                     </div>
                 </motion.div>
 
                 {/* Table */}
                 <motion.div
-                    className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-lg overflow-hidden"
+                    className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
                 >
-                    <table className="w-full table-auto">
-                        <thead className="bg-white/20">
-                            <tr>
-                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Order</th>
-                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Client</th>
-                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Metode</th>
-                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Jumlah</th>
-                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Bukti</th>
-                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Status</th>
-                                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-200 uppercase">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/10">
-                            {filtered.map(p => (
-                                <tr key={p.id} className="hover:bg-white/20 transition-colors">
-                                    <td className="px-4 py-2 text-sm text-white">{p.order?.service?.name || '—'}</td>
-                                    <td className="px-4 py-2 text-sm text-white">
-                                        {p.order?.client?.fullName || '-'}<br />
-                                        <span className="text-xs text-gray-300">{p.order?.client?.email}</span>
-                                    </td>
-                                    <td className="px-4 py-2 text-sm text-white">{p.paymentMethod}</td>
-                                    <td className="px-4 py-2 text-sm text-white">{p.amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</td>
-                                    <td className="px-4 py-2 text-sm text-white">
-                                        {p.proofUrl ? (
-                                            <a href={p.proofUrl} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:text-blue-100 underline">
-                                                Lihat
-                                            </a>
-                                        ) : '-'}
-                                    </td>
-                                    <td className="px-4 py-2">
-                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${statusBadge(p.status)}`}> {p.status} </span>
-                                    </td>
-                                    <td className="px-4 py-2">
-                                        {p.status === 'UNPAID' && (
-                                            <button
-                                                onClick={() => handleVerify(p.id)}
-                                                className="flex items-center gap-1 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full text-xs transition-colors"
-                                            >
-                                                <CheckCircle size={14} /> Verifikasi
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                            {filtered.length === 0 && (
+                    <div className="overflow-x-auto">
+                        <table className="w-full table-auto">
+                            <thead className="bg-white/5 border-b border-white/10">
                                 <tr>
-                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-300">
-                                        Tidak ada data pembayaran.
-                                    </td>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Order</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Client</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Metode</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Jumlah</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Bukti</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Aksi</th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {filtered.map(p => (
+                                    <tr key={p.id} className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4 text-sm text-white font-medium">{p.order?.service?.name || '—'}</td>
+                                        <td className="px-6 py-4 text-sm">
+                                            <div className="text-white font-medium">{p.order?.client?.fullName || '-'}</div>
+                                            <div className="text-xs text-gray-400 mt-1">{p.order?.client?.email}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-300">{p.paymentMethod}</td>
+                                        <td className="px-6 py-4 text-sm">
+                                            <span className="text-white font-semibold">
+                                                {p.amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            {p.proofUrl ? (
+                                                <a
+                                                    href={p.proofUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-blue-400 hover:text-blue-300 underline transition-colors"
+                                                >
+                                                    Lihat Bukti
+                                                </a>
+                                            ) : (
+                                                <span className="text-gray-500">-</span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusBadge(p.status)}`}>
+                                                {p.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {p.status === 'UNPAID' && (
+                                                <button
+                                                    onClick={() => handleVerify(p.id)}
+                                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-xl text-xs font-semibold transition-all shadow-lg shadow-emerald-500/20"
+                                                >
+                                                    <CheckCircle size={14} /> Verifikasi
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {filtered.length === 0 && (
+                                    <tr>
+                                        <td colSpan={7} className="px-6 py-12 text-center">
+                                            <div className="flex flex-col items-center justify-center">
+                                                <DollarSign className="w-12 h-12 text-gray-600 mb-3" />
+                                                <p className="text-gray-400">Tidak ada data pembayaran.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </motion.div>
 
                 {/* Back to Dashboard Link */}
-                <div className="mt-6 text-center">
-                    <Link href="/dashboard" className="text-white underline hover:text-gray-200">
+                <motion.div
+                    className="mt-8 text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    <Link
+                        href="/dashboard"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all"
+                    >
                         ← Kembali ke Dashboard
                     </Link>
-                </div>
+                </motion.div>
             </div>
         </div>
     );

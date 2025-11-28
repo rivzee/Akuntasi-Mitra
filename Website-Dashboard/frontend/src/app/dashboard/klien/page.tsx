@@ -52,9 +52,9 @@ export default function KlienDashboard() {
     ];
 
     const chartData = [
-        { name: 'Pending', value: stats.pending },
-        { name: 'In Progress', value: stats.inProgress },
-        { name: 'Completed', value: stats.completed },
+        { name: 'Menunggu', value: stats.pending },
+        { name: 'Diproses', value: stats.inProgress },
+        { name: 'Selesai', value: stats.completed },
     ];
 
     const container = {
@@ -90,7 +90,7 @@ export default function KlienDashboard() {
                         <div>
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-medium border border-white/10 backdrop-blur-md">
-                                    Client Dashboard
+                                    Dashboard Klien
                                 </span>
                                 <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
                             </div>

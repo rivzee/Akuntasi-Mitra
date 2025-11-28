@@ -217,8 +217,8 @@ export default function ServiceManagementPage() {
       render: (value) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-bold ${value
-              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-              : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
             }`}
         >
           {value ? 'Active' : 'Inactive'}
@@ -240,9 +240,6 @@ export default function ServiceManagementPage() {
     total: services.length,
     active: services.filter(s => s.isActive).length,
     inactive: services.filter(s => !s.isActive).length,
-    avgPrice: services.length > 0
-      ? Math.round(services.reduce((sum, s) => sum + s.price, 0) / services.length)
-      : 0,
   };
 
   if (isLoading) {
@@ -281,12 +278,11 @@ export default function ServiceManagementPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           { label: 'Total Services', value: stats.total, color: 'from-blue-500 to-cyan-500', icon: Package },
           { label: 'Active', value: stats.active, color: 'from-green-500 to-teal-500', icon: Briefcase },
           { label: 'Inactive', value: stats.inactive, color: 'from-red-500 to-pink-500', icon: Briefcase },
-          { label: 'Avg Price', value: `Rp ${stats.avgPrice.toLocaleString('id-ID')}`, color: 'from-purple-500 to-indigo-500', icon: DollarSign },
         ].map((stat, idx) => {
           const Icon = stat.icon;
           return (

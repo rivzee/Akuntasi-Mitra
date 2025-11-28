@@ -194,7 +194,7 @@ export function LoadingSpinner({ size = 'md', className = '' }: { size?: 'sm' | 
 }
 
 // Full Page Loading
-export function FullPageLoading({ message = 'Loading...' }: { message?: string }) {
+export function FullPageLoading({ message = 'Memuat...' }: { message?: string }) {
     return (
         <div className="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 flex items-center justify-center">
             <div className="text-center">
@@ -212,7 +212,7 @@ export function ButtonLoading({ children, isLoading, ...props }: any) {
             {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
                     <LoadingSpinner size="sm" />
-                    <span>Loading...</span>
+                    <span>Memuat...</span>
                 </span>
             ) : (
                 children
